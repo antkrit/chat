@@ -1,0 +1,9 @@
+venv/
+.idea/
+logs/
+*.egg-info/
+
+__pycache__/
+
+.env.bat
+.env.sh
