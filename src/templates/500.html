@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main>
+    <div class="err-block">
+        <h1>500</h1>
+        <h3>Ooops!!</h3>
+        <p>Internal server error</p>
+        <a href="{{ url('index') }}" class="btn btn-warning">Back To Home</a>
+    </div>
+</main>
+{% endblock %}

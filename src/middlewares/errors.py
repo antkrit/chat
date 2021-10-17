@@ -1,6 +1,11 @@
+import http
+import logging
 import aiohttp_jinja2
 from aiohttp import web
 from typing import Callable
+
+
+logger = logging.getLogger('aiohttp.server')
 
 
 async def handle_404(request):  # noqa: D103
@@ -25,11 +30,13 @@ def create_error_middleware(overrides: dict[int, Callable]):
         except web.HTTPException as err:
             override = overrides.get(err.status)
             if override:
+                if err.status == http.HTTPStatus.INTERNAL_SERVER_ERROR:
+                    logger.error('Error occurred.', exc_info=True)
                 return await override(request)
 
             raise
         except Exception:
-            # logger
+            logger.error('Unexpected error.', exc_info=True)
             return await overrides[500](request)
 
     return error_middleware

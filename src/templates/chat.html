@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main>
+    <section class="container">
+        <div class="card">
+            <div class="card-body msg_card_body">
+                {% if messages %}
+                    {% for msg in messages %}
+                         <div class="d-flex justify-content-start mb-4">
+                            <div class="msg_cotainer_send">
+                                {{ msg.body }}
+                                <span class="msg_time_send">{{ msg.created_at.strftime("%d %B, %Y, %I:%M %p") }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <textarea class="form-control type_msg" style="resize:none"></textarea>
+                <span class="input-group-addon btn btn-warning send_btn"><i class="fas fa-location-arrow"></i></span>
+            </div>
+        </div>
+    </section>
+</main>
+
+    <div class="figure-1"></div>
+    <div class="figure-2"></div>
+
+<div class="figure-1"></div>
+<div class="figure-2"></div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ static('script.js') }}"></script>
+{% endblock %}

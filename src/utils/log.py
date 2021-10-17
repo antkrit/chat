@@ -1,8 +1,7 @@
-import os
 import logging
 from aiohttp.abc import AbstractAccessLogger
 from src.middlewares.log import REQUEST_ID
-from src.utils.globals import LOGS_FOLDER, DEFAULT_LOGS_FORMAT
+from src.utils.globals import DEFAULT_LOGS_FORMAT
 
 
 def setup_log_record_factory():
@@ -40,13 +39,6 @@ class CustomAccessLogger(AbstractAccessLogger):
         """Make log request records. Sets and resets request_id tokens."""
         token = REQUEST_ID.set(request['request_id'])
         try:
-            if not self.logger.handlers:
-                file_handler = create_log_handler(
-                    handler=logging.FileHandler,
-                    output=os.path.join(LOGS_FOLDER, 'access.log')
-                )
-                self.logger.addHandler(file_handler)
-
             self.logger.info(f'{request.remote} '
                              f'"{request.method} {request.path} '
                              f'done in {time}s. Status: {response.status}')

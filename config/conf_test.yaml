@@ -1,0 +1,9 @@
+postgres:
+  database: chat_db_test
+  user: test_user
+  password: root
+  host: localhost
+  port: 5416
+
+app: !include app.yaml
+telegram: !include telegram.yaml

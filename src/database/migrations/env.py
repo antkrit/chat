@@ -7,7 +7,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from src.database.db import meta
+from src.database.models import meta
 from src.utils.globals import DB_DSN
 
 # this is the Alembic Config object, which provides

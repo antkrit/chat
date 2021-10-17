@@ -1,8 +1,10 @@
+import logging
 import requests
-from src import app
+
+logger = logging.getLogger('aiohttp.server')
 
 
-def telegram_bot_send_msg(bot_msg: str):
+def telegram_bot_send_msg(app, bot_msg):
     """Send messages by telegram bot."""
     tg_cfg = app['config'].get('telegram', None)
     if tg_cfg:
@@ -17,15 +19,15 @@ def telegram_bot_send_msg(bot_msg: str):
                 response = requests.get(send_text)
                 return response.json()
             except requests.ConnectionError as err:
-                app.logger.error(
+                logger.error(
                     'ConnectionError while sending message: {0}'.format(err)
                 )
         else:
-            app.logger.info(
+            logger.info(
                 'The message was not sent. '
                 'bot_token or bot_chat_id not specified.'
             )
     else:
-        app.logger.info(
+        logger.info(
             'The message was not sent. `telegram` config not specified.'
         )
