@@ -49,7 +49,7 @@ class ConfigLoader(yaml.SafeLoader):
 ConfigLoader.add_constructors()
 
 
-def get_config(path: str) -> dict:
+def get_config(path):
     """Read config from yaml file and validates it.
 
     Contains config validator:

@@ -4,7 +4,7 @@ The key words `MUST`, `MUST NOT`, `REQUIRED`, `SHALL`, `SHALL NOT`, `SHOULD`, `S
 `NOT RECOMMENDED`, `MAY`, and `OPTIONAL` in this document are to be interpreted as described in
 [RFC2119](https://tools.ietf.org/html/rfc2119) only when, they appear in all capitals.
 
-This project is under [MIT](../LICENSE) license
+This project is under [MIT]() license
 
 ## Github
 ### Branches
@@ -14,7 +14,7 @@ This project is under [MIT](../LICENSE) license
 
 ### Versioning
 This application is versioned using a [Semantic Versioning](https://semver.org/) scheme.
-Current version of the application is stored in [package.json](../package.json) file.
+Current version of the application is stored in [package.json](../src/__init__.py) file.
 
 The `major`.`minor` portion of the version string (for example 1.1) MUST designate feature set.
 The `.patch` portion is for bug fixes.
@@ -26,13 +26,16 @@ low relative to the benefit provided.
 
 Folders:
 - [config](../config) - SHOULD contain application configuration files
+- [logs]() - this folder is created automatically when you start the program 
+  and contains files with logs
 - [documentation](../documentation) - MUST contain anything related to documentation
 - [src](../src) - SHOULD contain everything related to the application
+- [tests](../tests) - MUST contain everything related to the application tests
 
 ## Functionality
-Chat is a simple chat website where different people can
+`Chat` is a simple chat website where different people can
 communicate with each other.
 
 Anyone can enter the chat or create it without the need to register on the site. 
-In this case, the nickname will be generated randomly. Also, the chat may be closed. 
+Weak username protection. Also, the chat may be closed. 
 To join such a chat you need to enter a password.

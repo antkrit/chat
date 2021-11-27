@@ -1,6 +1,6 @@
 """Database package.
 
-Initializes web application and web service, contains following subpackages
+Defines functions to work with database, contains following subpackages
 and modules:
 
 Subpackages:
@@ -10,6 +10,7 @@ Modules:
 - `models`: contains database tables
 """
 import aiopg.sa
+from faker import Faker
 from sqlalchemy import MetaData
 from src.database.models import chat, message
 from src.utils.globals import main_engine_autocommit, engine_test_config
@@ -30,7 +31,7 @@ def setup_db(config: dict) -> None:
     with main_engine_autocommit.connect() as conn:
         conn.execute('DROP DATABASE IF EXISTS %s' % db_name)
         conn.execute('DROP ROLE IF EXISTS %s' % db_user)
-        conn.execute('CREATE USER %s WITH PASSWORD "%s"' %
+        conn.execute('CREATE USER %s WITH PASSWORD \'%s\'' %  # noqa:Q003
                      (db_user, db_password))
         conn.execute('CREATE DATABASE %s ENCODING "UTF8"' % db_name)
         conn.execute('GRANT ALL PRIVILEGES ON DATABASE %s TO %s' %
@@ -73,16 +74,16 @@ def drop_tables(engine=engine_test_config, tables=__all__):
 def sample_data(engine=engine_test_config):
     """Populate database with some test data."""
     with engine.connect() as conn:
-        conn.execute(chat.insert(), [
+        conn.execute(chat.insert(values=[
             {
                 'title': 'New chat',
-                'description': 'Here is something interesting.'
+                'description': Faker().text()
+            },
+            {
+                'title': 'Another chat',
+                'description': Faker().text()
             }
-        ])
-        conn.execute(message.insert(), [
-            {'body': 'Hi', 'chat_id': 1},
-            {'body': 'Hello', 'chat_id': 1},
-        ])
+        ]))
 
 
 async def pg_context(app):

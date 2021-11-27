@@ -20,10 +20,10 @@ def loop():
     except ImportError:
         pass  # Can't assign a policy which doesn't exist.
     else:
-        if not isinstance(
+        if sys.platform.startswith('win') and not isinstance(
                 asyncio.get_event_loop_policy(),
                 WindowsSelectorEventLoopPolicy
-        ) and sys.platform.startswith("win") and sys.version_info >= (3, 8):
+        ):
             asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())
 
     loop = asyncio.get_event_loop_policy().new_event_loop()
@@ -31,15 +31,22 @@ def loop():
     loop.close()
 
 
+def pytest_addoption(parser):
+    """Hook function to define new options."""
+    parser.addoption("--config", action="store", default=TEST_CONFIG_PATH)
+
+
 @pytest.fixture
-async def client(loop, aiohttp_client, db):
-    app = init_app(config_path=TEST_CONFIG_PATH)
+async def client(loop, aiohttp_client, db, pytestconfig):
+    """Return aiohttp client."""
+    app = init_app(pytestconfig.getoption("config"))
     return await aiohttp_client(app)
 
 
 @pytest.fixture(scope='module')
-def db():
-    config = get_config(TEST_CONFIG_PATH)
+def db(pytestconfig):
+    """Raise db connection."""
+    config = get_config(pytestconfig.getoption("config"))
     setup_db(config['postgres'])
 
     yield
@@ -49,6 +56,7 @@ def db():
 
 @pytest.fixture
 def upgrade_and_populate_db():
+    """Upgrade db to the latest revision and populate with some data."""
     create_tables()
     sample_data()
 

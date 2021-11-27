@@ -1,6 +1,6 @@
 import logging
 from aiohttp.abc import AbstractAccessLogger
-from src.middlewares.log import REQUEST_ID
+from src.middlewares.request import REQUEST_ID
 from src.utils.globals import DEFAULT_LOGS_FORMAT
 
 

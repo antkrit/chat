@@ -9,6 +9,7 @@ Subpackages:
 - `rest`: contains modules with RESTful service implementation
 - `schemas`: contains modules with serialization/deserialization schemas \
 for models
+- `services`: contains modules with classes used for CRUD operations
 - `static`: contains web application static files (scripts, styles, images)
 - `templates`: contains web application html templates
 - `utils`: contains modules with useful functions/classes to simplify code
@@ -20,13 +21,15 @@ import logging
 import asyncio
 import jinja2
 import aiohttp_jinja2
+import aiohttp_debugtoolbar
 
 from aiohttp import web
 from src.database import pg_context
-from src.views import index_view, chat_view
-from src.middlewares import log as ml, errors as me
+from src.views import index, chat
+from src.middlewares import error_middleware, add_request_id_middleware
 from src.utils.globals import (
-    BASEDIR, LOGS_FOLDER, DEFAULT_LOGS_FORMAT, DEFAULT_CONFIG_PATH
+    LOGS_FOLDER, DEFAULT_LOGS_FORMAT, DEFAULT_CONFIG_PATH,
+    STATIC_FOLDER, TEMPLATES_FOLDER
 )
 from src.utils.config import get_config
 from src.utils.log import setup_log_record_factory, create_log_handler
@@ -37,10 +40,10 @@ try:
 except ImportError:
     pass  # Can't assign a policy which doesn't exist.
 else:
-    if not isinstance(
+    if sys.platform.startswith('win') and not isinstance(
             asyncio.get_event_loop_policy(),
             WindowsSelectorEventLoopPolicy
-    ) and sys.platform.startswith('win') and sys.version_info >= (3, 8):
+    ):
         asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())
 
 __author__ = 'Anton Krytskyi'
@@ -48,7 +51,7 @@ __maintainer__ = __author__
 
 __email__ = 'mujanjagusav@gmail.com'
 __license__ = 'MIT'
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 __all__ = (
     '__author__',
@@ -59,25 +62,19 @@ __all__ = (
 )
 
 
-def setup_middlewares(curr_app):
-    """Add custom middlewares to app middlewares."""
-    curr_app.middlewares.append(ml.add_request_id_middleware)
-    curr_app.middlewares.append(me.error_middleware)
-
-
-def setup_routes(curr_app):
+def setup_routes(app: web.Application) -> None:
     """Add routes to app router."""
-    curr_app.router.add_get('/', index_view.index, name='index')
-    curr_app.router.add_get('/chat/{chat_uuid}', chat_view.chat, name='chat')
-    curr_app.router.add_static(
+    app.router.add_get('/', index, name='index')
+    app.router.add_get('/chat/{chat_uuid}', chat, name='chat')
+    app.router.add_static(
         '/static/',
-        path=os.path.join(BASEDIR, 'src', 'static'),
+        path=STATIC_FOLDER,
         name='static'
     )
 
 
-def setup_logging():
-    """Add file handler and stream handler to default app logger."""
+def setup_logging() -> None:
+    """Configure loggers."""
     if not os.path.exists(LOGS_FOLDER):
         os.mkdir(LOGS_FOLDER)
 
@@ -119,26 +116,40 @@ def setup_logging():
         handler=logging.FileHandler,
         output=os.path.join(LOGS_FOLDER, 'server.log')
     ))
-    server_logger.setLevel(logging.DEBUG)
+    server_logger.setLevel(logging.ERROR)
+
+    logging.getLogger('faker').setLevel(logging.ERROR)
 
 
-def init_app(config_path: str = DEFAULT_CONFIG_PATH) -> web.Application:
-    """Application factory."""
-    app = web.Application()
-    app['config'] = get_config(config_path)
+def init_app(*args, **kwargs) -> web.Application:
+    """Application factory.
 
-    aiohttp_jinja2.setup(
-        app,
-        loader=jinja2.FileSystemLoader(
-            os.path.join(BASEDIR, 'src', 'templates')
-        )
-    )
-    app['static_root_url'] = '/static'
+    Important: first parameter of *args must be config path
+    :returns: `web.Application`
+    """
+    _app = web.Application(middlewares=[
+        add_request_id_middleware,
+        error_middleware
+    ])
 
-    setup_routes(app)
-    setup_middlewares(app)
+    _app['config'] = get_config(args[0] if args else DEFAULT_CONFIG_PATH)
+    _app['static_root_url'] = '/static'
+    _app['websockets'] = dict()
+    _app['session'] = dict()
+
+    setup_routes(_app)
     setup_logging()
 
-    app.cleanup_ctx.append(pg_context)
+    aiohttp_jinja2.setup(
+        _app,
+        loader=jinja2.FileSystemLoader(
+            TEMPLATES_FOLDER
+        )
+    )
+    aiohttp_debugtoolbar.setup(
+        _app, enabled=_app['config']['app'].get('debug', False)
+    )
 
-    return app
+    _app.cleanup_ctx.append(pg_context)
+
+    return _app

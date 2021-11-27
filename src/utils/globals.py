@@ -5,6 +5,8 @@ from src.utils.config import get_config
 
 BASEDIR = pathlib.Path(__file__).parents[2]
 LOGS_FOLDER = os.path.join(BASEDIR, 'logs')
+STATIC_FOLDER = os.path.join(BASEDIR, 'src', 'static')
+TEMPLATES_FOLDER = os.path.join(BASEDIR, 'src', 'templates')
 DEFAULT_LOGS_FORMAT = '%(asctime)s %(name)-14s %(levelname)s: ' \
                       '%(request_id_prefix)s%(message)s'
 

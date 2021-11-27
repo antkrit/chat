@@ -1,3 +1,10 @@
+"""
+Defines preprocessor to handle browser errors.
+
+Expected errors:
+- 404
+- 500
+"""
 import http
 import logging
 import aiohttp_jinja2
@@ -20,11 +27,11 @@ def create_error_middleware(overrides: dict[int, Callable]):
     """Wrap error_middleware so that each error from 'overrides' can be handled \
     by single function.
 
-    :param overrides: dict where key is error status and value is handler
+    :param overrides: dict where key is error code and value is handler
     :returns: error middleware
     """
     @web.middleware
-    async def error_middleware(request, handler):
+    async def err_middleware(request, handler):
         try:
             return await handler(request)
         except web.HTTPException as err:
@@ -39,7 +46,7 @@ def create_error_middleware(overrides: dict[int, Callable]):
             logger.error('Unexpected error.', exc_info=True)
             return await overrides[500](request)
 
-    return error_middleware
+    return err_middleware
 
 
 error_middleware = create_error_middleware({

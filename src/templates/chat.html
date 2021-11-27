@@ -4,28 +4,25 @@
 <main>
     <section class="container">
         <div class="card">
-            <div class="card-body msg_card_body">
+            <div class="card-body msg_card_body" id="msg-container">
                 {% if messages %}
                     {% for msg in messages %}
                          <div class="d-flex justify-content-start mb-4">
                             <div class="msg_cotainer_send">
-                                {{ msg.body }}
-                                <span class="msg_time_send">{{ msg.created_at.strftime("%d %B, %Y, %I:%M %p") }}</span>
+                                <p class="msg_body">{{ msg.body }}</p>
+                                <span class="author">{{ msg.author }}</span>
                             </div>
                         </div>
                     {% endfor %}
                 {% endif %}
             </div>
             <div class="card-footer">
-                <textarea class="form-control type_msg" style="resize:none"></textarea>
-                <span class="input-group-addon btn btn-warning send_btn"><i class="fas fa-location-arrow"></i></span>
+                <textarea class="form-control type_msg" id="msg-text" style="resize:none"></textarea>
+                <span class="input-group-addon btn btn-warning send_btn" id="send-btn"><i class="fas fa-location-arrow"></i></span>
             </div>
         </div>
     </section>
 </main>
-
-    <div class="figure-1"></div>
-    <div class="figure-2"></div>
 
 <div class="figure-1"></div>
 <div class="figure-2"></div>
@@ -33,5 +30,86 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ static('script.js') }}"></script>
+<script>
+    $(document).ready(function(){
+        const wsUri = (window.location.protocol == "https:" && "wss://" || "ws://") + window.location.host + "{{ url('chat', chat_uuid=chat.uuid.hex) }}";
+        const socket = new WebSocket(wsUri);
+
+        function scrollToBottom() {
+            const msgContainer = $("#msg-container");
+            msgContainer.scrollTop(msgContainer.prop("scrollHeight"));
+        };
+
+        scrollToBottom();
+
+        function showMsg(msg, author = null) {
+            const msgContainer = $("#msg-container");
+            const msgElem = $("<div/>")
+                .addClass("d-flex justify-content-start mb-4")
+                .appendTo(msgContainer);
+            const msgTextDiv = $("<div/>")
+                .addClass("msg_cotainer_send")
+                .appendTo(msgElem);
+            const msgText = $("<p/>")
+                .addClass("msg_body")
+                .html(msg)
+                .appendTo(msgTextDiv);
+
+            console.log(msg);
+
+            if(author) {
+                const msgAuthor = $("<span/>")
+                    .addClass("author")
+                    .html(author)
+                    .appendTo(msgTextDiv);
+                scrollToBottom();
+            } else {
+                msgTextDiv.addClass("system_msg");
+            };
+        };
+
+        function sendMsg() {
+            const msg = $("#msg-text");
+            const msgTxt = msg.val().replace(/\s*$/,"");
+
+            if ($.trim(msgTxt)) {
+                socket.send(msgTxt);
+            }
+
+            msg.val("").focus();
+        };
+
+        socket.onopen = function() {
+            showMsg("Connected.")
+        };
+
+        $("#send-btn").click(function() {
+            sendMsg()
+        });
+
+        $("#msg-text").keypress(function(e) {
+            if(!e.shiftKey && event.code === 'Enter') {
+                sendMsg();
+                e.preventDefault();
+            }
+        });
+
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            showMsg(data.body, data.author)
+        };
+
+        socket.onclose = function(event) {
+            if(event.wasClean) {
+                showMsg('Clean connection end.')
+            } else {
+                showMsg('Connection broken.')
+            }
+        };
+
+        socket.onerror = function(error){
+            showMsg(error)
+        };
+    })
+</script>
 {% endblock %}

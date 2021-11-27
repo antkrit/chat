@@ -1,14 +1,16 @@
+import sys
 import logging
 
 from aiohttp.web import run_app
 from src import init_app
 from src.utils.log import CustomAccessLogger
-from src.utils.cli import default_parser
+
+
+def main():
+    app = init_app(*sys.argv[1:])
+    logging.getLogger('aiohttp').info("Starting app..")
+    run_app(app, access_log_class=CustomAccessLogger)
+
 
 if __name__ == "__main__":
-    logger = logging.getLogger('aiohttp')
-    args = default_parser.parse_args()  # get config path
-
-    app = init_app(config_path=args.config)
-    logger.info("Starting app..")
-    run_app(app, access_log_class=CustomAccessLogger)
+    main()

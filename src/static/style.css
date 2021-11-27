@@ -111,6 +111,8 @@ main {
 
 .msg_card_body {
     overflow-y: auto;
+    scrollbar-width: 7px;
+    scrollbar-color: rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1);
 }
 
 .msg_card_body::-webkit-scrollbar {
@@ -118,11 +120,11 @@ main {
 }
 
 .msg_card_body::-webkit-scrollbar-track {
-    background-color: transparent;
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 .msg_card_body::-webkit-scrollbar-thumb {
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.03);
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .msg_cotainer_send {
@@ -133,9 +135,24 @@ main {
     background-color: #FAD02C;
     padding: 10px;
     position: relative;
+    max-width: 50%;
 }
 
-.msg_time_send {
+.system_msg {
+    background-color: rgba(0,0,0,0.3);
+    font-weight: bold;
+    font-size: small;
+    max-width: 100%;
+    width: 100%;
+    text-align: center;
+}
+
+.msg_body {
+    white-space: pre-wrap;
+    margin-bottom: 0;
+}
+
+.author {
     position: absolute;
     white-space: nowrap;
     left: 5px;
@@ -150,12 +167,17 @@ main {
     border-radius: 0;
     color:white;
     height: 60px;
-    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.type_msg::-webkit-scrollbar {
+    display: none;
 }
 
 .type_msg:focus {
-    box-shadow:none;
-    outline:0px;
+    box-shadow: none;
+    outline: 0px;
 }
 
 .send_btn {
