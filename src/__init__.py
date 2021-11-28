@@ -4,6 +4,7 @@ Initializes web application and web service, contains following subpackages
 and modules:
 
 Subpackages:
+
 - `database`: contains everything related to database, including migrations
 - `middlewares`: contains modules with request preprocessors/middlewares
 - `rest`: contains modules with RESTful service implementation
@@ -51,7 +52,7 @@ __maintainer__ = __author__
 
 __email__ = 'mujanjagusav@gmail.com'
 __license__ = 'MIT'
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 __all__ = (
     '__author__',

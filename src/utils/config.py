@@ -53,7 +53,7 @@ def get_config(path):
     """Read config from yaml file and validates it.
 
     Contains config validator:
-        - config dict should contain 'postgres' 'app' keys
+        - config dict should contain `postgres` `app` keys
         - extra keys are allowed
 
     :param path: path to config file

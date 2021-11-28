@@ -16,9 +16,9 @@ from src.database.models import chat, message
 from src.utils.globals import main_engine_autocommit, engine_test_config
 
 # list of all tables
-__all__ = (
+all_tables = (
     chat,
-    message
+    message,
 )
 
 
@@ -53,7 +53,7 @@ def teardown_db(config: dict) -> None:
         conn.execute('DROP ROLE IF EXISTS %s' % db_user)
 
 
-def create_tables(engine=engine_test_config, tables=__all__):
+def create_tables(engine=engine_test_config, tables=all_tables):
     """Create tables in a database.
 
     By default configured for engine with a test config.
@@ -62,7 +62,7 @@ def create_tables(engine=engine_test_config, tables=__all__):
     meta.create_all(bind=engine, tables=tables)
 
 
-def drop_tables(engine=engine_test_config, tables=__all__):
+def drop_tables(engine=engine_test_config, tables=all_tables):
     """Delete tables from database.
 
     By default configured for engine with a test config.

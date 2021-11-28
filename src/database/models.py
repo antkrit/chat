@@ -1,10 +1,10 @@
 """Defines database tables.
 
 Tables:
-- `chat`, chat table with columns:
-    [id, uuid, title, description, created_at]
-- `message`, message table with columns:
-    [id, uuid, body, author, created_at, chat_id]
+- `chat`, chat table with columns: \
+[id, uuid, title, description, created_at]
+- `message`, message table with columns: \
+[id, uuid, body, author, created_at, chat_id]
 """
 import uuid
 from datetime import datetime
@@ -13,6 +13,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import UUID
 
+__all__ = ('chat', 'message')
 meta = MetaData()
 
 chat = Table(

@@ -15,11 +15,13 @@ from typing import Callable
 logger = logging.getLogger('aiohttp.server')
 
 
-async def handle_404(request):  # noqa: D103
+async def handle_404(request):
+    """Return 404 template."""
     return aiohttp_jinja2.render_template('404.html', request, {}, status=404)
 
 
-async def handle_500(request):  # noqa: D103
+async def handle_500(request):
+    """Return 500 template."""
     return aiohttp_jinja2.render_template('500.html', request, {}, status=500)
 
 
