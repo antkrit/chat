@@ -3,10 +3,6 @@ import re
 import yaml
 import trafaret as t
 
-from src.views.index_view import index
-from src.utils.globals import BASEDIR
-from src.middlewares import log as ml, errors as me
-
 
 class ConfigLoader(yaml.SafeLoader):
     """This is :class:`yaml.SafeLoafer` wrapper to add custom tags.
@@ -53,11 +49,11 @@ class ConfigLoader(yaml.SafeLoader):
 ConfigLoader.add_constructors()
 
 
-def get_config(path: str) -> dict:
+def get_config(path):
     """Read config from yaml file and validates it.
 
     Contains config validator:
-        - config dict should contain 'postgres' key
+        - config dict should contain `postgres` `app` keys
         - extra keys are allowed
 
     :param path: path to config file
@@ -79,18 +75,3 @@ def get_config(path: str) -> dict:
             return config
         except t.DataError as e:
             raise ValueError(f'Config is not valid: {e.as_dict()}') from e
-
-
-def setup_middlewares(app):
-    """Add custom middlewares to app middlewares."""
-    app.middlewares.append(ml.add_request_id_middleware)
-    app.middlewares.append(me.error_middleware)
-
-
-def setup_routes(app):
-    """Add routes to app router."""
-    app.router.add_get('/', index)
-
-
-default_config_path = os.path.join(BASEDIR, 'config', 'global_conf.yaml')
-default_config = get_config(default_config_path)

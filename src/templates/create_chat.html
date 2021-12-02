@@ -1,0 +1,21 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<main>
+    <section class="container">
+        <form class="d-flex flex-column create-chat-form p-2" method="POST" id="create-chat-from">
+            <input type="text" class="form-control form-control-lg" id="name" name="name" placeholder="New chat">
+            <textarea class="form-control flex-grow-1" id="description" name="description">Join us!</textarea>
+            <button type="submit" class="btn btn-primary">Create chat</button>
+        </form>
+    </section>
+</main>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ static('vendor/jquery.validate.min.js') }}"></script>
+<script src="{{ static('js/validation.js') }}"></script>
+{% endblock %}

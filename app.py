@@ -1,7 +1,16 @@
+import sys
+import logging
+
 from aiohttp.web import run_app
-from src import app
+from src import init_app
 from src.utils.log import CustomAccessLogger
 
-if __name__ == "__main__":
-    app.logger.info("Starting app..")
+
+def main():
+    app = init_app(*sys.argv[1:])
+    logging.getLogger('aiohttp').info("Starting app..")
     run_app(app, access_log_class=CustomAccessLogger)
+
+
+if __name__ == "__main__":
+    main()

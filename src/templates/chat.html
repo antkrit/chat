@@ -1,0 +1,31 @@
+{% extends "_base.html" %}
+
+{% block content %}
+<main>
+    <section class="container">
+        <div class="card">
+            <div class="card-body msg_card_body" id="msg-container">
+                {% if messages %}
+                    {% for msg in messages %}
+                         <div class="d-flex justify-content-start mb-4">
+                            <div class="msg_cotainer_send">
+                                <p class="author">{{ msg.author }}</p>
+                                <p class="msg_body">{{ msg.body }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <textarea class="form-control type_msg" id="msg-text" style="resize:none"></textarea>
+                <span class="input-group-addon btn btn-primary send_btn" id="send-btn"><i class="fas fa-location-arrow"></i></span>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ static('js/chat.js') }}"></script>
+{% endblock %}

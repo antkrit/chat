@@ -1,19 +1,17 @@
-"""
-Sources root package.
+"""Sources root package.
 
 Initializes web application and web service, contains following subpackages
 and modules:
 
 Subpackages:
-- `database`: contains all database-related, including migrations
+
+- `database`: contains everything related to database, including migrations
 - `middlewares`: contains modules with request preprocessors/middlewares
-- `rest`: contains modules with RESTful service implementation
-- `schemas`: contains modules with serialization/deserialization schemas \
-for models
+- `services`: contains modules with classes used for CRUD operations
 - `static`: contains web application static files (scripts, styles, images)
 - `templates`: contains web application html templates
 - `utils`: contains modules with useful functions/classes to simplify code
-- `views`: contains modules with web controllers/views
+- `views`: contains modules with web controllers
 """
 import os
 import sys
@@ -21,11 +19,21 @@ import logging
 import asyncio
 import jinja2
 import aiohttp_jinja2
+import aiohttp_debugtoolbar
 
 from aiohttp import web
-from src.database.db import pg_context
-from src.utils.globals import BASEDIR, LOGS_FOLDER, DEFAULT_LOGS_FORMAT
-from src.utils.common import default_config, setup_middlewares, setup_routes
+from aiohttp_session import session_middleware
+from aiohttp_session.cookie_storage import EncryptedCookieStorage
+from src.database import pg_context
+from src.views import index, chat, create_chat_post, create_chat_get
+from src.middlewares import (
+    error_middleware, add_request_id_middleware, flash_middleware
+)
+from src.utils.globals import (
+    LOGS_FOLDER, DEFAULT_LOGS_FORMAT, DEFAULT_CONFIG_PATH,
+    STATIC_FOLDER, TEMPLATES_FOLDER
+)
+from src.utils.config import get_config
 from src.utils.log import setup_log_record_factory, create_log_handler
 
 # fix of an issue: https://github.com/aio-libs/aiopg/issues/678
@@ -34,7 +42,7 @@ try:
 except ImportError:
     pass  # Can't assign a policy which doesn't exist.
 else:
-    if not isinstance(
+    if sys.platform.startswith('win') and not isinstance(
             asyncio.get_event_loop_policy(),
             WindowsSelectorEventLoopPolicy
     ):
@@ -45,7 +53,7 @@ __maintainer__ = __author__
 
 __email__ = 'mujanjagusav@gmail.com'
 __license__ = 'MIT'
-__version__ = '0.0.1'
+__version__ = '1.0.0'
 
 __all__ = (
     '__author__',
@@ -55,42 +63,108 @@ __all__ = (
     '__version__',
 )
 
-app = web.Application()
-app['config'] = default_config
 
-aiohttp_jinja2.setup(
-    app,
-    loader=jinja2.FileSystemLoader(os.path.join(BASEDIR, 'src', 'templates'))
-)
-setup_routes(app)
-app.router.add_static(
-    '/static/',
-    path=os.path.join(BASEDIR, 'src', 'static'),
-    name='static'
-)
-setup_middlewares(app)
-app.cleanup_ctx.append(pg_context)
+def setup_routes(app: web.Application) -> None:
+    """Add routes to app router."""
+    app.router.add_get('/', index, name='index')
+    app.router.add_get('/chat/{chat_uuid}', chat, name='chat')
+    app.router.add_get('/create', create_chat_get, name='create_chat')
+    app.router.add_post('/create', create_chat_post, name='create_chat_post')
+    app.router.add_static(
+        '/static/',
+        path=STATIC_FOLDER,
+        name='static'
+    )
 
-# logging
-if not os.path.exists(LOGS_FOLDER):
-    os.mkdir(LOGS_FOLDER)
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format=DEFAULT_LOGS_FORMAT
-)
-setup_log_record_factory()
+def setup_logging() -> None:
+    """Configure loggers."""
+    if not os.path.exists(LOGS_FOLDER):  # pragma: no cover
+        os.mkdir(LOGS_FOLDER)
 
-file_handler = create_log_handler(
-    handler=logging.FileHandler,
-    output=os.path.join(LOGS_FOLDER, 'app.log')
-)
-console_handler = create_log_handler(
-    handler=logging.StreamHandler,
-    output=sys.stdout
-)
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format=DEFAULT_LOGS_FORMAT
+    )
+    setup_log_record_factory()
 
-app.logger.handlers.clear()
-app.logger.addHandler(file_handler)
-app.logger.addHandler(console_handler)
-app.logger.setLevel(logging.DEBUG)
+    console_handler = create_log_handler(
+        handler=logging.StreamHandler,
+        output=sys.stdout
+    )
+
+    # aiohttp
+    main_logger = logging.getLogger('aiohttp')
+    main_logger.handlers.clear()
+    main_logger.addHandler(create_log_handler(
+        handler=logging.FileHandler,
+        output=os.path.join(LOGS_FOLDER, 'app.log')
+    ))
+    main_logger.addHandler(console_handler)
+    main_logger.setLevel(logging.DEBUG)
+    main_logger.propagate = False
+
+    # aiohttp.access
+    access_logger = logging.getLogger('aiohttp.access')
+    access_logger.handlers.clear()
+    access_logger.addHandler(create_log_handler(
+        handler=logging.FileHandler,
+        output=os.path.join(LOGS_FOLDER, 'access.log')
+    ))
+    access_logger.setLevel(logging.DEBUG)
+
+    # aiohttp.server
+    server_logger = logging.getLogger('aiohttp.server')
+    server_logger.handlers.clear()
+    server_logger.addHandler(create_log_handler(
+        handler=logging.FileHandler,
+        output=os.path.join(LOGS_FOLDER, 'server.log')
+    ))
+    server_logger.setLevel(logging.ERROR)
+
+    logging.getLogger('faker').setLevel(logging.ERROR)
+
+
+def init_app(*args, **kwargs) -> web.Application:
+    """Application factory.
+
+    Important: first parameter of args must be config path
+    :returns: `web.Application`
+    """
+    config = get_config(args[0] if args else DEFAULT_CONFIG_PATH)
+
+    _app = web.Application(middlewares=[
+        error_middleware,
+        session_middleware(
+            EncryptedCookieStorage(
+                str.encode('{0}'.format(
+                    config['app']['cookie_storage_secret_key']
+                ))
+            )
+        ),
+        flash_middleware,
+        add_request_id_middleware
+    ])
+
+    _app['config'] = config
+    _app['static_root_url'] = '/static'
+    _app['websockets'] = dict()
+
+    setup_routes(_app)
+    setup_logging()
+
+    aiohttp_jinja2.setup(
+        _app,
+        loader=jinja2.FileSystemLoader(
+            TEMPLATES_FOLDER
+        )
+    )
+    aiohttp_debugtoolbar.setup(
+        _app,
+        enabled=_app['config']['app'].get('debug', False),
+        intercept_redirects=False
+    )
+
+    _app.cleanup_ctx.append(pg_context)
+
+    return _app

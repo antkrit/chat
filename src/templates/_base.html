@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ static('vendor/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ static('css/normalize.css') }}">
+    <link rel="stylesheet" href="{{ static('css/style.css') }}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+        integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    {% if title %}
+        <title>{{ title }}</title>
+    {% else %}
+        <title>Chat</title>
+    {% endif %}
+</head>
+<body>
+
+{% if flash %}
+<div class="alert alert-primary" role="alert" id="top-page-alert">{{ flash }}</div>
+{% endif %}
+
+{% block content %}
+{% endblock %}
+
+<div class="figure-1"></div>
+<div class="figure-2"></div>
+
+{% block scripts %}
+<script src="{{ static('vendor/jquery-3.6.0.min.js') }}"></script>
+<script src="{{ static('vendor/bootstrap.bundle.min.js') }}"></script>
+<script type="text/javascript">
+    $(document).ready( function() {
+        $('#top-page-alert').delay(1000).fadeOut();
+    });
+</script>
+{% endblock %}
+</body>
+</html>

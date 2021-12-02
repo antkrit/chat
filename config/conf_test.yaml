@@ -1,0 +1,14 @@
+postgres:
+  database: chat_db_test
+  user: test_user
+  password: root
+  host: localhost
+  port: 5416
+
+app:
+  debug: True
+  testing: True
+  host: 127.0.0.1
+  port: 8080
+  cookie_storage_secret_key: Thirty  two  length  bytes  key.
+telegram: !include telegram.yaml
