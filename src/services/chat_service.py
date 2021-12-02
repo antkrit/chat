@@ -12,7 +12,11 @@ class ChatService:
 
     @staticmethod
     async def get_chats(conn):
-        """Get all chats."""
+        """Get all chats.
+
+        :param conn: `aiopg.sa.connection.SAConnection`
+        :returns: list of chats
+        """
         result = await conn.execute(chat.select())
         records = await result.fetchall()
         return records
@@ -21,11 +25,15 @@ class ChatService:
     async def get_chat(conn, chat_uuid, n):
         """Get chat by uuid.
 
+        :param conn: `aiopg.sa.connection.SAConnection`
+        :param chat_uuid: chat uuid
+        :param n: number of messages to load
         :returns: (chat, last n messages)
         """
         result = await conn.execute(
             chat.select()
                 .where(chat.c.uuid == chat_uuid)
+                .limit(1)
         )
         chat_record = await result.first()
 
@@ -42,3 +50,33 @@ class ChatService:
         )
         msg_records = await result.fetchall()
         return chat_record, reversed(msg_records)
+
+    @staticmethod
+    async def is_used(conn, title):
+        """Check if chat title is not used.
+
+        :param conn: `aiopg.sa.connection.SAConnection`
+        :param title: chat title
+        :returns: True if used, otherwise - False
+        """
+        result = await conn.execute(
+            chat.select()
+                .where(chat.c.title == title)
+        )
+        chat_name = await result.first()
+        return chat_name is not None
+
+    @staticmethod
+    async def save_to_db(conn, title, description):
+        """Save message to db.
+
+        :param conn: `aiopg.sa.connection.SAConnection`
+        :param title: chat title
+        :param description: chat description
+        """
+        await conn.execute(
+            chat.insert(values={
+                'title': title,
+                'description': description
+            })
+        )

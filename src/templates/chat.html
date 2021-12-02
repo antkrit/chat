@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "_base.html" %}
 
 {% block content %}
 <main>
@@ -9,8 +9,8 @@
                     {% for msg in messages %}
                          <div class="d-flex justify-content-start mb-4">
                             <div class="msg_cotainer_send">
+                                <p class="author">{{ msg.author }}</p>
                                 <p class="msg_body">{{ msg.body }}</p>
-                                <span class="author">{{ msg.author }}</span>
                             </div>
                         </div>
                     {% endfor %}
@@ -18,20 +18,14 @@
             </div>
             <div class="card-footer">
                 <textarea class="form-control type_msg" id="msg-text" style="resize:none"></textarea>
-                <span class="input-group-addon btn btn-warning send_btn" id="send-btn"><i class="fas fa-location-arrow"></i></span>
+                <span class="input-group-addon btn btn-primary send_btn" id="send-btn"><i class="fas fa-location-arrow"></i></span>
             </div>
         </div>
     </section>
 </main>
-
-<div class="figure-1"></div>
-<div class="figure-2"></div>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
-<script>
-    const wsUri = (window.location.protocol == "https:" && "wss://" || "ws://") + window.location.host + "{{ url('chat', chat_uuid=chat.uuid.hex) }}";
-</script>
-<script src="{{ static('chat.js') }}"></script>
+<script src="{{ static('js/chat.js') }}"></script>
 {% endblock %}

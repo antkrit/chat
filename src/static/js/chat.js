@@ -1,5 +1,5 @@
 $(document).ready(function(){
-
+    const wsUri = (window.location.protocol == "https:" && "wss://" || "ws://") + window.location.host + window.location.pathname + window.location.search;
     const socket = new WebSocket(wsUri);
 
     function scrollToBottom() {
@@ -17,15 +17,11 @@ $(document).ready(function(){
         const msgTextDiv = $("<div/>")
             .addClass("msg_cotainer_send")
             .appendTo(msgElem);
-        const msgText = $("<p/>")
-            .addClass("msg_body")
-            .html(msg)
-            .appendTo(msgTextDiv);
 
         console.log(msg);
 
         if(author) {
-            const msgAuthor = $("<span/>")
+            const msgAuthor = $("<p/>")
                 .addClass("author")
                 .html(author)
                 .appendTo(msgTextDiv);
@@ -33,6 +29,11 @@ $(document).ready(function(){
         } else {
             msgTextDiv.addClass("system_msg");
         };
+
+        const msgText = $("<p/>")
+            .addClass("msg_body")
+            .html(msg)
+            .appendTo(msgTextDiv);
     };
 
     function sendMsg() {
@@ -68,10 +69,11 @@ $(document).ready(function(){
 
     socket.onclose = function(event) {
         if(event.wasClean) {
-            showMsg('Clean connection end.')
+            showMsg('Another person log in under your nickname.')
         } else {
             showMsg('Connection broken.')
         }
+        window.location.assign('/');
     };
 
     socket.onerror = function(error){

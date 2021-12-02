@@ -1,5 +1,4 @@
-"""
-Defines preprocessor to handle browser errors.
+"""Defines preprocessor to handle browser errors.
 
 Expected errors:
 - 404
@@ -17,12 +16,20 @@ logger = logging.getLogger('aiohttp.server')
 
 async def handle_404(request):
     """Return 404 template."""
-    return aiohttp_jinja2.render_template('404.html', request, {}, status=404)
+    return aiohttp_jinja2.render_template(
+        'errors/404.html',
+        request, {},
+        status=404
+    )
 
 
 async def handle_500(request):
     """Return 500 template."""
-    return aiohttp_jinja2.render_template('500.html', request, {}, status=500)
+    return aiohttp_jinja2.render_template(
+        'errors/500.html',
+        request, {},
+        status=500
+    )
 
 
 def create_error_middleware(overrides: dict[int, Callable]):

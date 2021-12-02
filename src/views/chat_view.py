@@ -7,8 +7,8 @@ import uuid
 import logging
 import aiohttp_jinja2
 
-from faker import Faker
 from aiohttp import web, WSMsgType
+from src.utils.flash import flash_get, flash_set
 from src.utils.exceptions import RecordNotFound
 from src.services import ChatService, MessageService
 
@@ -22,7 +22,7 @@ async def chat(request: web.Request):
     :param request: incoming request
     :raise `web.HTTPNotFound`: in case if uuid is wrong or chat with such \
     uuid does not exist
-    :return: rendered template `chat.html` until the web socket is open,
+    :return: rendered template `chat.html` until the web socket is open, \
     `web.WebSocketResponse` after opening.
     """
     async with request.app['db'].acquire() as conn:
@@ -35,6 +35,21 @@ async def chat(request: web.Request):
 
             if not request.app['websockets'].get(chat_uuid_hex, None):
                 request.app['websockets'][chat_uuid_hex] = dict()
+
+            name = request.rel_url.query.get('username')
+            ws_by_name = request.app['websockets'][chat_uuid_hex].get(name, None)  # noqa: E501
+            if not name:
+                raise web.HTTPSeeOther(
+                    str(request.app.router['index'].url_for())
+                )
+            if ws_by_name is not None:
+                flash_set(
+                    request,
+                    'flash',
+                    'Another person logged in under your nickname.'
+                )
+                await ws_by_name.close()
+
         except ValueError as err:
             # if unable convert chat_uuid to UUID
             raise web.HTTPNotFound(text=str(err))
@@ -46,17 +61,16 @@ async def chat(request: web.Request):
             ws = web.WebSocketResponse()
             ws_ready = ws.can_prepare(request)
 
-            if not ws_ready.ok:
+            if not ws_ready.ok:  # pragma: no cover
+                flash = flash_get(request, 'flash')
                 return aiohttp_jinja2.render_template('chat.html', request, {
                     'chat': chat_,
-                    'messages': messages
+                    'messages': messages,
+                    'flash': flash
                 })
 
             await ws.prepare(request)
 
-            # get random name
-            request.app['session']['username'] = Faker().name()
-            name = request.app['session']['username']
             logger.info('%s joined', name)
 
             for _ws in request.app['websockets'][chat_uuid_hex].values():
@@ -67,7 +81,7 @@ async def chat(request: web.Request):
                 msg = await ws.receive()
 
                 if msg.type == WSMsgType.text and msg.data:
-                    await MessageService.insert_message(
+                    await MessageService.save_to_db(
                         conn, chat_uuid, msg.data, name
                     )
                     for _ws in request.app['websockets'][chat_uuid_hex].values():  # noqa: E501

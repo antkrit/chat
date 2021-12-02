@@ -1,13 +1,7 @@
 """Defines preprocessor to set request tracing id."""
 import secrets
-import logging
 from aiohttp import web
-from contextvars import ContextVar
-
-
-# context var that contains given request tracing id
-REQUEST_ID = ContextVar('request_id')
-logger = logging.getLogger('aiohttp.server')
+from src.utils.globals import REQUEST_ID
 
 
 @web.middleware

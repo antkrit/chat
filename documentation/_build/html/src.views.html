@@ -15,6 +15,7 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="src.utils package" href="src.utils.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -53,10 +54,44 @@
 <dd class="field-even"><p><strong>web.HTTPNotFound</strong> – in case if uuid is wrong or chat with such     uuid does not exist</p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>rendered template <cite>chat.html</cite> until the web socket is open,</p>
+<dd class="field-odd"><p>rendered template <cite>chat.html</cite> until the web socket is open,     <cite>web.WebSocketResponse</cite> after opening.</p>
 </dd>
 </dl>
-<p><cite>web.WebSocketResponse</cite> after opening.</p>
+</dd></dl>
+
+</section>
+<section id="module-src.views.create_chat_view">
+<span id="src-views-create-chat-view-module"></span><h2>src.views.create_chat_view module<a class="headerlink" href="#module-src.views.create_chat_view" title="Permalink to this headline">¶</a></h2>
+<p>Create chat view used to render index template with list of chats.</p>
+<p>This module defines the following views:
+- <cite>create_chat_post</cite>, POST handler for create_chat
+- <cite>create_chat_get</cite>, GET handler for create_chat</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.views.create_chat_view.create_chat_get">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.views.create_chat_view.</span></span><span class="sig-name descname"><span class="pre">create_chat_get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">aiohttp.web_request.Request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.views.create_chat_view.create_chat_get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render <cite>create_chat.html</cite> template for url route      GET <cite>/create</cite> and endpoint <cite>create_chat</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>request</strong> – <cite>web.Request</cite></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>request context with list of chats</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.views.create_chat_view.create_chat_post">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.views.create_chat_view.</span></span><span class="sig-name descname"><span class="pre">create_chat_post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">aiohttp.web_request.Request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.views.create_chat_view.create_chat_post" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render <cite>create_chat.html</cite> template for url route      POST <cite>/create</cite> and endpoint <cite>create_chat_post</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>request</strong> – <cite>web.Request</cite></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>request context with list of chats</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -85,6 +120,7 @@
 <p>This package contains modules with web controllers.</p>
 <p>Modules:
 - <cite>chat_view.py</cite>: defines chat view
+- <cite>create_chat_view.py</cite>: defines view for creating chats
 - <cite>index_view.py</cite>: defines index view</p>
 </section>
 </section>
@@ -106,11 +142,23 @@
 
 
 <h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Chat</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="src.html">src package</a></li>
+</ul>
+</li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">Chat</a><ul>
+  <li><a href="src.html">src package</a><ul>
+      <li>Previous: <a href="src.utils.html" title="previous chapter">src.utils package</a></li>
+  </ul></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>

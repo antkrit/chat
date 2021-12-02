@@ -12,6 +12,14 @@ src.views.chat\_view module
     :undoc-members:
     :show-inheritance:
 
+src.views.create\_chat\_view module
+--------------------------------------------------
+
+.. automodule:: src.views.create_chat_view
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 src.views.index\_view module
 ------------------------------------------------
 

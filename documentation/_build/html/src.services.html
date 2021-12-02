@@ -15,6 +15,8 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src.utils package" href="src.utils.html" />
+    <link rel="prev" title="src.middlewares package" href="src.middlewares.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -51,8 +53,15 @@
 <em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_chat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chat_uuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.services.chat_service.ChatService.get_chat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get chat by uuid.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>(chat, last n messages)</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conn</strong> – <cite>aiopg.sa.connection.SAConnection</cite></p></li>
+<li><p><strong>chat_uuid</strong> – chat uuid</p></li>
+<li><p><strong>n</strong> – number of messages to load</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(chat, last n messages)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -61,6 +70,46 @@
 <dt class="sig sig-object py" id="src.services.chat_service.ChatService.get_chats">
 <em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_chats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.services.chat_service.ChatService.get_chats" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all chats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>conn</strong> – <cite>aiopg.sa.connection.SAConnection</cite></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of chats</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.services.chat_service.ChatService.is_used">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_used</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.services.chat_service.ChatService.is_used" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if chat title is not used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conn</strong> – <cite>aiopg.sa.connection.SAConnection</cite></p></li>
+<li><p><strong>title</strong> – chat title</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if used, otherwise - False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.services.chat_service.ChatService.save_to_db">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.services.chat_service.ChatService.save_to_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save message to db.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conn</strong> – <cite>aiopg.sa.connection.SAConnection</cite></p></li>
+<li><p><strong>title</strong> – chat title</p></li>
+<li><p><strong>description</strong> – chat description</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -77,9 +126,19 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Message service used to make database queries.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="src.services.message_service.MessageService.insert_message">
-<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">insert_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chat_uuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">author</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.services.message_service.MessageService.insert_message" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.services.message_service.MessageService.save_to_db">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chat_uuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">author</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.services.message_service.MessageService.save_to_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save message to db.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conn</strong> – <cite>aiopg.sa.connection.SAConnection</cite></p></li>
+<li><p><strong>chat_uuid</strong> – chat uuid</p></li>
+<li><p><strong>body</strong> – message text</p></li>
+<li><p><strong>author</strong> – author of the message</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -111,11 +170,24 @@
 
 
 <h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Chat</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="src.html">src package</a></li>
+</ul>
+</li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">Chat</a><ul>
+  <li><a href="src.html">src package</a><ul>
+      <li>Previous: <a href="src.middlewares.html" title="previous chapter">src.middlewares package</a></li>
+      <li>Next: <a href="src.utils.html" title="next chapter">src.utils package</a></li>
+  </ul></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>

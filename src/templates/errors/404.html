@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "errors/_base.html" %}
 
 {% block content %}
 <main>
@@ -6,7 +6,7 @@
         <h1>404</h1>
         <h3>Ooops!!</h3>
         <p>That page doesn't exists</p>
-        <a href="{{ url('index') }}" class="btn btn-warning">Back To Home</a>
+        <a href="{{ url('index') }}" class="btn btn-primary">Back To Home</a>
     </div>
 </main>
 {% endblock %}

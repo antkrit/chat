@@ -16,12 +16,25 @@
     {% endif %}
 </head>
 <body>
+
+{% if flash %}
+<div class="alert alert-primary" role="alert" id="top-page-alert">{{ flash }}</div>
+{% endif %}
+
 {% block content %}
 {% endblock %}
+
+<div class="figure-1"></div>
+<div class="figure-2"></div>
 
 {% block scripts %}
 <script src="{{ static('vendor/jquery-3.6.0.min.js') }}"></script>
 <script src="{{ static('vendor/bootstrap.bundle.min.js') }}"></script>
+<script type="text/javascript">
+    $(document).ready( function() {
+        $('#top-page-alert').delay(1000).fadeOut();
+    });
+</script>
 {% endblock %}
 </body>
 </html>

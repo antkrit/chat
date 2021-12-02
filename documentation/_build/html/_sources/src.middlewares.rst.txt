@@ -12,6 +12,14 @@ src.middlewares.errors module
     :undoc-members:
     :show-inheritance:
 
+src.middlewares.flash module
+--------------------------------------------------
+
+.. automodule:: src.middlewares.flash
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 src.middlewares.request module
 ------------------------------------------------
 

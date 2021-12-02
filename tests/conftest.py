@@ -4,6 +4,7 @@ import asyncio
 
 from src import init_app
 from src.database import setup_db, teardown_db, create_tables, sample_data, drop_tables
+from src.services import ChatService
 from src.utils.config import get_config
 from src.utils.globals import TEST_CONFIG_PATH
 
@@ -40,18 +41,18 @@ def pytest_addoption(parser):
 async def client(loop, aiohttp_client, db, pytestconfig):
     """Return aiohttp client."""
     app = init_app(pytestconfig.getoption("config"))
-    return await aiohttp_client(app)
+    return await aiohttp_client(app), app
 
 
 @pytest.fixture(scope='module')
 def db(pytestconfig):
     """Raise db connection."""
     config = get_config(pytestconfig.getoption("config"))
-    setup_db(config['postgres'])
+    setup_db(config=config['postgres'])
 
     yield
 
-    teardown_db(config['postgres'])
+    teardown_db(config=config['postgres'])
 
 
 @pytest.fixture

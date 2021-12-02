@@ -7,9 +7,6 @@ Subpackages:
 
 - `database`: contains everything related to database, including migrations
 - `middlewares`: contains modules with request preprocessors/middlewares
-- `rest`: contains modules with RESTful service implementation
-- `schemas`: contains modules with serialization/deserialization schemas \
-for models
 - `services`: contains modules with classes used for CRUD operations
 - `static`: contains web application static files (scripts, styles, images)
 - `templates`: contains web application html templates
@@ -25,9 +22,13 @@ import aiohttp_jinja2
 import aiohttp_debugtoolbar
 
 from aiohttp import web
+from aiohttp_session import session_middleware
+from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from src.database import pg_context
-from src.views import index, chat
-from src.middlewares import error_middleware, add_request_id_middleware
+from src.views import index, chat, create_chat_post, create_chat_get
+from src.middlewares import (
+    error_middleware, add_request_id_middleware, flash_middleware
+)
 from src.utils.globals import (
     LOGS_FOLDER, DEFAULT_LOGS_FORMAT, DEFAULT_CONFIG_PATH,
     STATIC_FOLDER, TEMPLATES_FOLDER
@@ -52,7 +53,7 @@ __maintainer__ = __author__
 
 __email__ = 'mujanjagusav@gmail.com'
 __license__ = 'MIT'
-__version__ = '0.2.1'
+__version__ = '1.0.0'
 
 __all__ = (
     '__author__',
@@ -67,6 +68,8 @@ def setup_routes(app: web.Application) -> None:
     """Add routes to app router."""
     app.router.add_get('/', index, name='index')
     app.router.add_get('/chat/{chat_uuid}', chat, name='chat')
+    app.router.add_get('/create', create_chat_get, name='create_chat')
+    app.router.add_post('/create', create_chat_post, name='create_chat_post')
     app.router.add_static(
         '/static/',
         path=STATIC_FOLDER,
@@ -76,7 +79,7 @@ def setup_routes(app: web.Application) -> None:
 
 def setup_logging() -> None:
     """Configure loggers."""
-    if not os.path.exists(LOGS_FOLDER):
+    if not os.path.exists(LOGS_FOLDER):  # pragma: no cover
         os.mkdir(LOGS_FOLDER)
 
     logging.basicConfig(
@@ -125,18 +128,27 @@ def setup_logging() -> None:
 def init_app(*args, **kwargs) -> web.Application:
     """Application factory.
 
-    Important: first parameter of *args must be config path
+    Important: first parameter of args must be config path
     :returns: `web.Application`
     """
+    config = get_config(args[0] if args else DEFAULT_CONFIG_PATH)
+
     _app = web.Application(middlewares=[
-        add_request_id_middleware,
-        error_middleware
+        error_middleware,
+        session_middleware(
+            EncryptedCookieStorage(
+                str.encode('{0}'.format(
+                    config['app']['cookie_storage_secret_key']
+                ))
+            )
+        ),
+        flash_middleware,
+        add_request_id_middleware
     ])
 
-    _app['config'] = get_config(args[0] if args else DEFAULT_CONFIG_PATH)
+    _app['config'] = config
     _app['static_root_url'] = '/static'
     _app['websockets'] = dict()
-    _app['session'] = dict()
 
     setup_routes(_app)
     setup_logging()
@@ -148,7 +160,9 @@ def init_app(*args, **kwargs) -> web.Application:
         )
     )
     aiohttp_debugtoolbar.setup(
-        _app, enabled=_app['config']['app'].get('debug', False)
+        _app,
+        enabled=_app['config']['app'].get('debug', False),
+        intercept_redirects=False
     )
 
     _app.cleanup_ctx.append(pg_context)

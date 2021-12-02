@@ -5,9 +5,12 @@
     box-sizing: border-box;
 }
 
+body {
+    background: linear-gradient(to right top, #97F9F9, #A4DEF9);
+}
+
 main {
     min-height: 100vh;
-    background: linear-gradient(to right top, #FAD02C, #F8EFE4);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -63,6 +66,10 @@ main {
     left: 15%;
 }
 
+.modal-footer {
+    flex-wrap: nowrap;
+}
+
 .chats {
     display: flex;
     flex-direction: column;
@@ -93,6 +100,10 @@ main {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.error{
+    color: red;
 }
 
 .card {
@@ -132,7 +143,7 @@ main {
     margin-bottom: auto;
     margin-left: 10px;
     border-radius: 25px;
-    background-color: #FAD02C;
+    background-color: #C1E0F7;
     padding: 10px;
     position: relative;
     max-width: 50%;
@@ -153,12 +164,9 @@ main {
 }
 
 .author {
-    position: absolute;
     white-space: nowrap;
-    left: 5px;
-    bottom: -15px;
     color: rgba(0,0,0,0.5);
-    font-size: 10px;
+    margin-bottom: 0;
 }
 
 .type_msg {
@@ -189,13 +197,14 @@ main {
     border-radius: 0;
 }
 
-.btn-warning {
-    background-color: #FAD02C;
+.btn-primary {
+    background-color: #C1E0F7;
+    border-color: #C1E0F7;
 }
 
-.btn-outline-warning {
-    color: #FAD02C;
-    border-color: #FAD02C;
+.btn-outline-primary {
+    color: #C1E0F7;
+    border-color: #C1E0F7;
 }
 
 .err-block {
@@ -211,4 +220,8 @@ main {
 
 .err-block p {
     text-transform: uppercase;
+}
+
+.create-chat-form {
+    height: 100%;
 }

@@ -2,6 +2,12 @@ import os
 import pathlib
 from sqlalchemy import create_engine
 from src.utils.config import get_config
+from contextvars import ContextVar
+
+REQUEST_ID = ContextVar('request_id')
+FLASH_OLD_REQUEST_KEY = 'old_request'
+FLASH_NEW_REQUEST_KEY = 'new_request'
+FLASH_SESSION_KEY = 'flash_session'
 
 BASEDIR = pathlib.Path(__file__).parents[2]
 LOGS_FOLDER = os.path.join(BASEDIR, 'logs')

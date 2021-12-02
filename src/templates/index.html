@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "_base.html" %}
 
 {% block content %}
 <div class="modal fade" id="joinModal" tabindex="-1" aria-labelledby="joinModalLabel" aria-hidden="true">
@@ -12,7 +12,14 @@
                 Chat description
             </div>
             <div class="modal-footer">
-                <a href="#" id="modal-chat-href" type="button" class="btn btn-warning">Join</a>
+                <form class="row g-3" id="enter-chat-form" action="">
+                    <div class="col-auto">
+                        <input type="text" class="form-control" name="username" placeholder="Username">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Join</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -21,6 +28,7 @@
 <main>
     <section class="container">
         <div class="chats">
+            <a href="{{ url('create_chat') }}" class="btn btn-primary">+ Create new chat</a>
             {% if chats %}
                 {% for chat in chats %}
                     <div class="chat">
@@ -31,7 +39,7 @@
                             <h3>{{ chat.title }}</h3>
                         </div>
                         <div class="chat-right">
-                            <button type="button" class="btn btn-outline-warning btn_join" data-bs-toggle="modal" data-bs-target="#joinModal"
+                            <button type="button" class="btn btn-outline-primary btn_join" data-bs-toggle="modal" data-bs-target="#joinModal"
                             data-title = "{{ chat.title | replace('\n', '<br>') }}"  data-descr = "{{ chat.description | replace('\n', '<br>') }}"
                             data-href = "{{ url('chat', chat_uuid=chat.uuid.hex) }}">
                                 Join
@@ -43,20 +51,11 @@
         </div>
     </section>
 </main>
-
-<div class="figure-1"></div>
-<div class="figure-2"></div>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
-<script>
-    $(".btn_join").each(function() {
-        this.addEventListener("click", function() {
-            $('#modal-chat-name').html($(this).attr('data-title'));
-            $('#modal-chat-descr').html($(this).attr('data-descr'));
-            $('#modal-chat-href').prop('href', $(this).attr('data-href'));
-        });
-    });
-</script>
+<script src="{{ static('vendor/jquery.validate.min.js') }}"></script>
+<script src="{{ static('js/index.js') }}"></script>
+<script src="{{ static('js/validation.js') }}"></script>
 {% endblock %}

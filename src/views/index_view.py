@@ -5,6 +5,7 @@ This module defines the following views:
 """
 import aiohttp_jinja2
 from aiohttp import web
+from src.utils.flash import flash_get
 from src.services import ChatService
 
 
@@ -17,4 +18,5 @@ async def index(request: web.Request):
     """
     async with request.app['db'].acquire() as conn:
         chats = await ChatService.get_chats(conn)
-        return {'chats': chats}
+        flash = flash_get(request, 'flash')
+        return {'chats': chats, 'flash': flash}

@@ -34,8 +34,5 @@ Folders:
 
 ## Functionality
 `Chat` is a simple chat website where different people can
-communicate with each other.
-
-Anyone can enter the chat or create it without the need to register on the site. 
-Weak username protection. Also, the chat may be closed. 
-To join such a chat you need to enter a password.
+communicate with each other. Anyone can enter the chat or create it 
+without the need to register on the site. Weak username protection.

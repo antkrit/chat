@@ -20,6 +20,14 @@ src.utils.exceptions module
     :undoc-members:
     :show-inheritance:
 
+src.utils.flash module
+------------------------------------------------
+
+.. automodule:: src.utils.flash
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 src.utils.log module
 ------------------------------------------------
 
